@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yüklenen CSV Dosyası</title>
+    <style>
+        .dataframe {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .dataframe th, .dataframe td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .dataframe th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yüklenen CSV Dosyası</h1>
+
+    <h2>Sütun Bilgileri</h2>
+    <p>Sayısal Sütun Sayısı: {{ num_numeric_cols }}</p>
+    <p>Sayısal Sütunlar: {{ numeric_cols }}</p>
+    <p>Kategorik Sütun Sayısı: {{ num_categorical_cols }}</p>
+    <p>Kategorik Sütunlar: {{ categorical_cols }}</p>
+
+    <h2>Sayısal Sütunların İlk 5 Satırı</h2>
+    <div>{{ numeric_head|safe }}</div>
+
+    <h2>Sayısal Sütunların İstatistiksel Özellikleri</h2>
+    <div>{{ numeric_stats|safe }}</div>
+
+    {% if categorical_head %}
+    <h2>Kategorik Sütunların İlk 5 Satırı</h2>
+    <div>{{ categorical_head|safe }}</div>
+    {% endif %}
+
+    <h2>Verinin İlk 5 Satırı</h2>
+    <div>{{ full_head|safe }}</div>
+
+    {% if categorical_unique_path %}
+    <h2>Kategorik Sütunların Benzersiz Değer Sayıları</h2>
+    <img src="{{ categorical_unique_path }}" alt="Categorical Unique Values Bar Plot">
+    {% endif %}
+
+    {% if numeric_boxplot_path %}
+    <h2>Sayısal Sütunların Box Plot'u</h2>
+    <img src="{{ numeric_boxplot_path }}" alt="Box Plot of Numerical Columns">
+    {% endif %}
+
+    <h2>Aykırı Değer Sayıları</h2>
+    <div>{{ outliers_table|safe }}</div>
+
+    <h2>Model Accuracy</h2>
+    <p>{{ accuracy }}</p>
+
+    <h2>Cross-Validation Mean Accuracy</h2>
+    <p>{{ cross_val_mean }}</p>
+
+    <h2>Confusion Matrix</h2>
+    <img src="{{ cm_display_path }}" alt="Confusion Matrix">
+
+    <h2>Deprem Büyüklüğü Dağılımı</h2>
+    <img src="{{ pie_chart_path }}" alt="Deprem Büyüklüğü Dağılımı">
+
+    <h2>Türkiye Deprem Risk Haritası</h2>
+    <img src="{{ turkey_map_path }}" alt="Türkiye Deprem Risk Haritası">
+
+</body>
+</html>
