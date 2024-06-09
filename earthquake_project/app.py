@@ -8,11 +8,13 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import folium
+from folium import plugins
 
 # Matplotlib backend'ini 'Agg' olarak ayarlama
 matplotlib.use('Agg')
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['STATIC_FOLDER'] = 'static/uploads'
 
@@ -26,8 +28,12 @@ def index():
         if file and file.filename.endswith('.csv'):
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
-            return redirect(url_for('results', filename=file.filename))
+            return redirect(url_for('secim', filename=file.filename))
     return render_template('index.html')
+
+@app.route('/secim/<filename>')
+def secim(filename):
+    return render_template('secim.html', filename=filename)
 
 @app.route('/results/<filename>')
 def results(filename):
@@ -158,6 +164,13 @@ def results(filename):
     plt.savefig(pie_chart_path)
     plt.close()
     
+    # Folium haritasını oluşturma ve kaydetme
+    m = folium.Map(location=[df["lat"].mean(), df["long"].mean()], zoom_start=3)
+    heat_data = df[["lat", "long"]].dropna().values
+    m.add_child(plugins.HeatMap(heat_data))
+    map_path = os.path.join(app.config['STATIC_FOLDER'], 'map.html')
+    m.save(map_path)
+
     return render_template(
         'results.html', 
         numeric_head=numeric_head, 
@@ -178,5 +191,15 @@ def results(filename):
         cross_val_mean=cross_val_mean
     )
 
+@app.route('/harita/<filename>')
+def harita(filename):
+    # Harita dosyasının doğru şekilde oluşturulduğundan emin olun
+    map_path=url_for('static', filename='uploads/map.html')
+    return render_template('harita.html', map_path=map_path)
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+

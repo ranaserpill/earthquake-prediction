@@ -5,72 +5,209 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yüklenen CSV Dosyası</title>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #343a40;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            width: 100%;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
         .dataframe {
             border-collapse: collapse;
             width: 100%;
+            margin: 20px 0;
+            overflow-x: auto;
+            display: block;
+            background-color: #f1f1f1;
         }
+
         .dataframe th, .dataframe td {
-            border: 1px solid #ddd;
+            border: 1px solid #dee2e6;
             padding: 8px;
-        }
-        .dataframe th {
-            padding-top: 12px;
-            padding-bottom: 12px;
             text-align: left;
-            background-color: #f2f2f2;
+            white-space: nowrap;
+        }
+
+        .dataframe th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .statistics, .outliers, .model-accuracy, .cross-validation, .confusion-matrix, .distribution, .map {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .img-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .img-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .map iframe {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            text-align: center;
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .btn-secondary {
+            background-color: #17a2b8;
+        }
+
+        .btn-secondary:hover {
+            background-color: #138496;
+        }
+
+        .center-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
     </style>
 </head>
 <body>
-    <h1>Yüklenen CSV Dosyası</h1>
+    <div class="container">
+        <h1>Yüklenen CSV Dosyası</h1>
 
-    <h2>Sütun Bilgileri</h2>
-    <p>Sayısal Sütun Sayısı: {{ num_numeric_cols }}</p>
-    <p>Sayısal Sütunlar: {{ numeric_cols }}</p>
-    <p>Kategorik Sütun Sayısı: {{ num_categorical_cols }}</p>
-    <p>Kategorik Sütunlar: {{ categorical_cols }}</p>
+        <div class="statistics">
+            <h2>Sütun Bilgileri</h2>
+            <p>Sayısal Sütun Sayısı: {{ num_numeric_cols }}</p>
+            <p>Sayısal Sütunlar: {{ numeric_cols }}</p>
+            <p>Kategorik Sütun Sayısı: {{ num_categorical_cols }}</p>
+            <p>Kategorik Sütunlar: {{ categorical_cols }}</p>
+        </div>
 
-    <h2>Sayısal Sütunların İlk 5 Satırı</h2>
-    <div>{{ numeric_head|safe }}</div>
+        <div class="data-preview center-content">
+            <h2>Sayısal Sütunların İlk 5 Satırı</h2>
+            <div class="dataframe-wrapper">
+                <div class="dataframe">{{ numeric_head|safe }}</div>
+            </div>
+        </div>
 
-    <h2>Sayısal Sütunların İstatistiksel Özellikleri</h2>
-    <div>{{ numeric_stats|safe }}</div>
+        <div class="data-preview center-content">
+            <h2>Sayısal Sütunların İstatistiksel Özellikleri</h2>
+            <div class="dataframe-wrapper">
+                <div class="dataframe">{{ numeric_stats|safe }}</div>
+            </div>
+        </div>
 
-    {% if categorical_head %}
-    <h2>Kategorik Sütunların İlk 5 Satırı</h2>
-    <div>{{ categorical_head|safe }}</div>
-    {% endif %}
+        {% if categorical_head %}
+        <div class="data-preview center-content">
+            <h2>Kategorik Sütunların İlk 5 Satırı</h2>
+            <div class="dataframe-wrapper">
+                <div class="dataframe">{{ categorical_head|safe }}</div>
+            </div>
+        </div>
+        {% endif %}
 
-    <h2>Verinin İlk 5 Satırı</h2>
-    <div>{{ full_head|safe }}</div>
+        <div class="data-preview center-content">
+            <h2>Verinin İlk 5 Satırı</h2>
+            <div class="dataframe-wrapper">
+                <div class="dataframe">{{ full_head|safe }}</div>
+            </div>
+        </div>
 
-    {% if categorical_unique_path %}
-    <h2>Kategorik Sütunların Benzersiz Değer Sayıları</h2>
-    <img src="{{ categorical_unique_path }}" alt="Categorical Unique Values Bar Plot">
-    {% endif %}
+        <div class="img-container">
+            <div>
+                <h2>Kategorik Sütunların Benzersiz Değer Sayıları</h2>
+                <img src="{{ categorical_unique_path }}" alt="Categorical Unique Values Bar Plot">
+            </div>
 
-    {% if numeric_boxplot_path %}
-    <h2>Sayısal Sütunların Box Plot'u</h2>
-    <img src="{{ numeric_boxplot_path }}" alt="Box Plot of Numerical Columns">
-    {% endif %}
+            <div>
+                <h2>Sayısal Sütunların Box Plot'u</h2>
+                <img src="{{ numeric_boxplot_path }}" alt="Box Plot of Numerical Columns">
+            </div>
+        </div>
 
-    <h2>Aykırı Değer Sayıları</h2>
-    <div>{{ outliers_table|safe }}</div>
+        <div class="outliers">
+            <h2>Aykırı Değer Sayıları</h2>
+            <div>{{ outliers_table|safe }}</div>
+        </div>
 
-    <h2>Model Accuracy</h2>
-    <p>{{ accuracy }}</p>
+        <div class="model-accuracy">
+            <h2>Model Accuracy</h2>
+            <p>{{ accuracy }}</p>
+        </div>
 
-    <h2>Cross-Validation Mean Accuracy</h2>
-    <p>{{ cross_val_mean }}</p>
+        <div class="cross-validation">
+            <h2>Cross-Validation Mean Accuracy</h2>
+            <p>{{ cross_val_mean }}</p>
+        </div>
 
-    <h2>Confusion Matrix</h2>
-    <img src="{{ cm_display_path }}" alt="Confusion Matrix">
+        <div class="confusion-matrix">
+            <h2>Confusion Matrix</h2>
+            <img src="{{ cm_display_path }}" alt="Confusion Matrix">
+        </div>
 
-    <h2>Deprem Büyüklüğü Dağılımı</h2>
-    <img src="{{ pie_chart_path }}" alt="Deprem Büyüklüğü Dağılımı">
+        <div class="distribution">
+            <h2>Deprem Büyüklüğü Dağılımı</h2>
+            <img src="{{ pie_chart_path }}" alt="Deprem Büyüklüğü Dağılımı">
+        </div>
 
-    <h2>Türkiye Deprem Risk Haritası</h2>
-    <img src="{{ turkey_map_path }}" alt="Türkiye Deprem Risk Haritası">
-
+    </div>
 </body>
 </html>
